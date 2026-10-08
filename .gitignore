@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# VS Code
+.vscode/
+
+# Project documents
+*.docx
+
+# Reports / generated files
+reports/
+
+# Portfolio files
+srushti-portfolio/
+
+# Temporary/test file
+p1.py
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Python virtual environment
+venv/
+env/
+.venv/
+
+# Logs
+*.log

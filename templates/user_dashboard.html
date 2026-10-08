@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Trust Watch - User Dashboard</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #0f172a;
+            color: #e5e7eb;
+            min-height: 100vh;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 240px;
+            background: #111827;
+            border-right: 1px solid #1f2937;
+            padding: 25px 18px;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #ffffff;
+        }
+
+        .system-name {
+            color: #9ca3af;
+            font-size: 11px;
+            line-height: 1.5;
+            margin-bottom: 35px;
+        }
+
+        .online {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #22c55e;
+            font-size: 13px;
+            margin-bottom: 25px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 12px 14px;
+            color: #9ca3af;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: #1e293b;
+            color: #ffffff;
+        }
+
+        .logout {
+            position: absolute;
+            bottom: 25px;
+            left: 18px;
+            right: 18px;
+            background: #1e293b;
+            text-align: center;
+        }
+
+        /* MAIN */
+        .main {
+            margin-left: 240px;
+            width: calc(100% - 240px);
+            padding: 30px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .topbar h1 {
+            font-size: 28px;
+        }
+
+        .welcome {
+            color: #9ca3af;
+            margin-top: 6px;
+        }
+
+        .refresh-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+
+        .refresh-btn:hover {
+            background: #1d4ed8;
+        }
+
+        /* STATUS */
+        .status-banner {
+            background: #111827;
+            border: 1px solid #1f2937;
+            border-radius: 12px;
+            padding: 22px;
+            margin-bottom: 25px;
+        }
+
+        .status-title {
+            font-size: 14px;
+            color: #9ca3af;
+            margin-bottom: 10px;
+        }
+
+        .status-value {
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        .status-description {
+            color: #9ca3af;
+            margin-top: 8px;
+        }
+
+        .active-status {
+            color: #22c55e;
+        }
+
+        .restricted-status {
+            color: #f59e0b;
+        }
+
+        .suspended-status {
+            color: #ef4444;
+        }
+
+        /* CARDS */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: #111827;
+            border: 1px solid #1f2937;
+            border-radius: 12px;
+            padding: 22px;
+        }
+
+        .card-title {
+            color: #9ca3af;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .card-value {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        /* PROFILE */
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .section {
+            background: #111827;
+            border: 1px solid #1f2937;
+            border-radius: 12px;
+            padding: 22px;
+        }
+
+        .section h2 {
+            font-size: 18px;
+            margin-bottom: 18px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #1f2937;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #9ca3af;
+        }
+
+        .info-value {
+            color: #ffffff;
+        }
+
+        /* ACTIVITY TABLE */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 14px 12px;
+            text-align: left;
+            border-bottom: 1px solid #1f2937;
+        }
+
+        th {
+            color: #9ca3af;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        td {
+            font-size: 13px;
+        }
+
+        .activity-normal {
+            color: #22c55e;
+        }
+
+        .activity-blocked {
+            color: #f59e0b;
+        }
+
+        .empty {
+            text-align: center;
+            color: #9ca3af;
+            padding: 30px;
+        }
+
+        .last-updated {
+            color: #6b7280;
+            font-size: 12px;
+            margin-top: 15px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                width: 200px;
+            }
+
+            .main {
+                margin-left: 200px;
+                width: calc(100% - 200px);
+            }
+        }
+
+        @media (max-width: 650px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0;
+                width: 100%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            Trust Watch
+        </div>
+
+        <div class="system-name">
+            Internal Threat Detection<br>
+            & Prevention System
+        </div>
+
+        <div class="online">
+            <span class="dot"></span>
+            System Online
+        </div>
+
+        <a href="/user-dashboard" class="nav-item active">
+            Dashboard
+        </a>
+
+        <a href="#activities" class="nav-item">
+            My Activities
+        </a>
+
+        <a href="#profile" class="nav-item">
+            My Account
+        </a>
+
+        <a href="/logout" class="nav-item logout">
+            Logout
+        </a>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+        <!-- TOP BAR -->
+        <div class="topbar">
+
+            <div>
+                <h1>User Dashboard</h1>
+
+                <div class="welcome">
+                    Welcome, {{ user.name }}
+                </div>
+            </div>
+
+            <button class="refresh-btn" onclick="loadDashboard()">
+                Refresh
+            </button>
+
+        </div>
+
+
+        <!-- ACCOUNT STATUS -->
+        <div class="status-banner">
+
+            <div class="status-title">
+                ACCOUNT SECURITY STATUS
+            </div>
+
+            <div id="statusValue" class="status-value">
+                Loading...
+            </div>
+
+            <div id="statusDescription" class="status-description">
+                Checking your account status...
+            </div>
+
+        </div>
+
+
+        <!-- STAT CARDS -->
+        <div class="cards">
+
+            <div class="card">
+                <div class="card-title">
+                    My Activities
+                </div>
+
+                <div id="activityCount" class="card-value">
+                    0
+                </div>
+            </div>
+
+
+            <div class="card">
+                <div class="card-title">
+                    Account Status
+                </div>
+
+                <div id="cardStatus" class="card-value">
+                    -
+                </div>
+            </div>
+
+
+            <div class="card">
+                <div class="card-title">
+                    Last Activity
+                </div>
+
+                <div id="lastActivity" class="card-value"
+                     style="font-size:18px;">
+                    -
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- PROFILE + SECURITY -->
+        <div class="profile-grid">
+
+            <section class="section" id="profile">
+
+                <h2>My Account</h2>
+
+                <div class="info-row">
+                    <span class="info-label">Name</span>
+                    <span class="info-value">{{ user.name }}</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Role</span>
+                    <span class="info-value">{{ user.role }}</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Account Status</span>
+                    <span id="profileStatus"
+                          class="info-value">
+                        Loading...
+                    </span>
+                </div>
+
+            </section>
+
+
+            <section class="section">
+
+                <h2>Security Information</h2>
+
+                <div class="info-row">
+                    <span class="info-label">Monitoring</span>
+                    <span class="info-value">
+                        Enabled
+                    </span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Behavior Analysis</span>
+                    <span class="info-value">
+                        Active
+                    </span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">ML Detection</span>
+                    <span class="info-value">
+                        Enabled
+                    </span>
+                </div>
+
+            </section>
+
+        </div>
+
+
+        <!-- ACTIVITIES -->
+        <section class="section" id="activities">
+
+            <h2>My Recent Activities</h2>
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Activity</th>
+                            <th>Resource</th>
+                            <th>Action</th>
+                            <th>Time</th>
+                            <th>IP Address</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="activitiesTable">
+
+                        <tr>
+                            <td colspan="5" class="empty">
+                                Loading activities...
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <div class="last-updated">
+                Last updated:
+                <span id="lastUpdated">-</span>
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script>
+
+    // Escape HTML to safely display database values
+    function escapeHTML(value) {
+
+        if (value === null || value === undefined) {
+            return "";
+        }
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+
+    // Format database date
+    function formatDate(value) {
+
+        if (!value) {
+            return "-";
+        }
+
+        const date = new Date(value);
+
+        if (isNaN(date.getTime())) {
+            return value;
+        }
+
+        return date.toLocaleString();
+    }
+
+
+    // Load complete dashboard
+    async function loadDashboard() {
+
+        try {
+
+            await loadStatus();
+            await loadActivities();
+
+            document.getElementById("lastUpdated").textContent =
+                new Date().toLocaleTimeString();
+
+        } catch (error) {
+
+            console.error("Dashboard error:", error);
+
+        }
+
+    }
+
+
+    // Load account status
+    async function loadStatus() {
+
+        try {
+
+            const response = await fetch("/api/my-status");
+
+            if (!response.ok) {
+                throw new Error("Unable to get account status");
+            }
+
+            const data = await response.json();
+
+            const status = data.status || "Unknown";
+
+
+            const statusValue =
+                document.getElementById("statusValue");
+
+            const cardStatus =
+                document.getElementById("cardStatus");
+
+            const profileStatus =
+                document.getElementById("profileStatus");
+
+            const description =
+                document.getElementById("statusDescription");
+
+
+            statusValue.textContent = status;
+            cardStatus.textContent = status;
+            profileStatus.textContent = status;
+
+
+            // Remove old classes
+            statusValue.classList.remove(
+                "active-status",
+                "restricted-status",
+                "suspended-status"
+            );
+
+
+            if (status === "Active") {
+
+                statusValue.classList.add("active-status");
+
+                description.textContent =
+                    "Your account is active and normal monitoring is enabled.";
+
+            }
+
+            else if (status === "Restricted") {
+
+                statusValue.classList.add("restricted-status");
+
+                description.textContent =
+                    "Your account is restricted. Some activities may be blocked and monitored.";
+
+            }
+
+            else if (status === "Suspended") {
+
+                statusValue.classList.add("suspended-status");
+
+                description.textContent =
+                    "Your account has been suspended. Access to protected activities is disabled.";
+
+            }
+
+            else {
+
+                description.textContent =
+                    "Account status could not be determined.";
+
+            }
+
+        } catch (error) {
+
+            console.error(error);
+
+            document.getElementById("statusValue").textContent =
+                "Unavailable";
+
+            document.getElementById("statusDescription").textContent =
+                "Unable to retrieve account status.";
+
+        }
+
+    }
+
+
+    // Load user's activities
+    async function loadActivities() {
+
+        try {
+
+            const response =
+                await fetch("/api/my-activities");
+
+            if (!response.ok) {
+                throw new Error("Unable to load activities");
+            }
+
+            const activities =
+                await response.json();
+
+
+            const table =
+                document.getElementById("activitiesTable");
+
+
+            document.getElementById("activityCount")
+                .textContent = activities.length;
+
+
+            if (!activities || activities.length === 0) {
+
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="empty">
+                            No activities recorded yet.
+                        </td>
+                    </tr>
+                `;
+
+                document.getElementById("lastActivity")
+                    .textContent = "-";
+
+                return;
+            }
+
+
+            table.innerHTML = "";
+
+
+            activities.forEach(activity => {
+
+                const activityType =
+                    escapeHTML(activity.activity_type);
+
+                const resource =
+                    escapeHTML(activity.resource);
+
+                const action =
+                    escapeHTML(activity.action);
+
+                const timestamp =
+                    formatDate(activity.timestamp);
+
+                const ip =
+                    escapeHTML(activity.ip_address || "-");
+
+
+                const isBlocked =
+                    activity.activity_type === "Blocked Activity";
+
+
+                const row =
+                    document.createElement("tr");
+
+
+                row.innerHTML = `
+
+                    <td class="${isBlocked
+                        ? "activity-blocked"
+                        : "activity-normal"}">
+                        ${activityType}
+                    </td>
+
+                    <td>
+                        ${resource || "-"}
+                    </td>
+
+                    <td>
+                        ${action || "-"}
+                    </td>
+
+                    <td>
+                        ${timestamp}
+                    </td>
+
+                    <td>
+                        ${ip}
+                    </td>
+
+                `;
+
+
+                table.appendChild(row);
+
+            });
+
+
+            document.getElementById("lastActivity")
+                .textContent =
+                formatDate(activities[0].timestamp);
+
+        } catch (error) {
+
+            console.error(error);
+
+            document.getElementById("activitiesTable")
+                .innerHTML = `
+                    <tr>
+                        <td colspan="5" class="empty">
+                            Unable to load activities.
+                        </td>
+                    </tr>
+                `;
+
+        }
+
+    }
+
+
+    // Initial loading
+    loadDashboard();
+
+
+    // Automatically refresh every 5 seconds
+    setInterval(loadDashboard, 5000);
+
+</script>
+
+</body>
+</html>

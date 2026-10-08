@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Trust Watch | Security Operations Center</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- =====================================================
+         SIDEBAR
+         ===================================================== -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-logo">TW</div>
+            <div>
+                <h2>Trust Watch</h2>
+                <span>Security Center</span>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+
+            <a href="#dashboard" class="nav-item active">
+                <span class="nav-icon">◈</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="#alerts" class="nav-item">
+                <span class="nav-icon">⚠</span>
+                <span>Security Alerts</span>
+            </a>
+
+            <a href="#activities" class="nav-item">
+                <span class="nav-icon">◉</span>
+                <span>Activity Monitor</span>
+            </a>
+
+            <a href="#incidents" class="nav-item">
+                <span class="nav-icon">◆</span>
+                <span>Incident Management</span>
+            </a>
+
+            <a href="#analytics" class="nav-item">
+                <span class="nav-icon">▦</span>
+                <span>Security Analytics</span>
+            </a>
+
+            <a href="#reports" class="nav-item">
+                <span class="nav-icon">▤</span>
+                <span>Security Reports</span>
+            </a>
+
+            <a href="/users" class="nav-item">
+                <span class="nav-icon">♙</span>
+                <span>User Management</span>
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <div class="admin-box">
+                <div class="admin-avatar">A</div>
+                <div class="admin-info">
+                    <strong>{{ session.get('name', 'Administrator') }}</strong>
+                    <span>Security Administrator</span>
+                </div>
+            </div>
+
+            <a href="/logout" class="logout-btn"><span>Logout</span></a>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+         ===================================================== -->
+
+    <main class="main-content">
+
+        <header class="topbar">
+            <div>
+                <h1>Security Operations Center</h1>
+                <p>Internal Threat Detection &amp; Prevention System</p>
+            </div>
+
+            <div class="topbar-right">
+                <div class="system-status">
+                    <span class="online-dot"></span>
+                    System Online
+                </div>
+
+                <button class="refresh-btn" id="refreshBtn">↻ Refresh</button>
+            </div>
+        </header>
+
+        <div class="security-banner">
+            <div class="banner-icon">✓</div>
+            <div>
+                <h3>Trust Watch protection active</h3>
+                <p>User activity monitoring, ML anomaly detection, alert monitoring and access control are enabled.</p>
+            </div>
+        </div>
+
+
+        <!-- =================================================
+             DASHBOARD OVERVIEW
+             ================================================= -->
+
+        <section class="section" id="dashboard">
+
+            <div class="section-header">
+                <div>
+                    <h2>Security overview</h2>
+                    <p class="section-subtitle">Real-time security monitoring summary</p>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+
+                <div class="stat-card">
+                    <div class="stat-icon users-icon">♙</div>
+                    <div>
+                        <span class="stat-label">Total users</span>
+                        <span class="stat-value" id="totalUsers">0</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon alert-icon">⚠</div>
+                    <div>
+                        <span class="stat-label">Security alerts</span>
+                        <span class="stat-value" id="totalAlerts">0</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon activity-icon">◉</div>
+                    <div>
+                        <span class="stat-label">Activities</span>
+                        <span class="stat-value" id="totalActivities">0</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon threat-icon">⚡</div>
+                    <div>
+                        <span class="stat-label">Critical threats</span>
+                        <span class="stat-value" id="criticalAlerts">0</span>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SECURITY POSTURE
+             ================================================= -->
+
+        <section class="section">
+
+            <div class="section-header">
+                <div>
+                    <h2>Security posture</h2>
+                    <p class="section-subtitle">Current protection status of Trust Watch</p>
+                </div>
+            </div>
+
+            <div class="posture-card">
+
+                <div class="posture-score">
+                    <div class="score-circle">
+                        <div class="score-ring" id="scoreRing"></div>
+                        <div class="score-value" id="securityScore">0</div>
+                    </div>
+                    <div>
+                        <h3>Security score</h3>
+                        <p>Overall system protection based on users, alerts, incidents and monitoring status.</p>
+                    </div>
+                </div>
+
+                <div class="posture-items">
+
+                    <div class="posture-item">
+                        <span class="posture-dot"></span>
+                        <span>Activity monitoring</span>
+                        <strong>ACTIVE</strong>
+                    </div>
+
+                    <div class="posture-item">
+                        <span class="posture-dot"></span>
+                        <span>ML anomaly detection</span>
+                        <strong>ACTIVE</strong>
+                    </div>
+
+                    <div class="posture-item">
+                        <span class="posture-dot"></span>
+                        <span>Alert monitoring</span>
+                        <strong>ACTIVE</strong>
+                    </div>
+
+                    <div class="posture-item">
+                        <span class="posture-dot"></span>
+                        <span>Access control</span>
+                        <strong>ACTIVE</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             ML ENGINE
+             ================================================= -->
+
+        <section class="section">
+
+            <div class="section-header">
+                <div>
+                    <h2>Threat detection engine</h2>
+                    <p class="section-subtitle">Machine learning based anomaly detection</p>
+                </div>
+            </div>
+
+            <div class="ml-card">
+
+                <div class="ml-status">
+                    <div class="ml-icon">ML</div>
+                    <div>
+                        <h3>Isolation Forest anomaly detection</h3>
+                        <p>Monitoring user activities for abnormal and suspicious behavior.</p>
+                    </div>
+                </div>
+
+                <div class="ml-details">
+                    <div>
+                        <span>Model</span>
+                        <strong>Isolation Forest</strong>
+                    </div>
+                    <div>
+                        <span>Detection</span>
+                        <strong class="status-active">RUNNING</strong>
+                    </div>
+                    <div>
+                        <span>Monitoring</span>
+                        <strong class="status-active">REAL-TIME</strong>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SECURITY ALERTS
+             ================================================= -->
+
+        <section class="section" id="alerts">
+
+            <div class="section-header">
+                <div>
+                    <h2>Security alerts</h2>
+                    <p class="section-subtitle">Suspicious activities detected by the security engine</p>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Alert ID</th>
+                            <th>User</th>
+                            <th>Alert type</th>
+                            <th>Severity</th>
+                            <th>Description</th>
+                            <th>Time</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="alertsTable">
+                        <tr><td colspan="7" class="empty">Loading security alerts...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             ACTIVITY MONITOR
+             ================================================= -->
+
+        <section class="section" id="activities">
+
+            <div class="section-header">
+                <div>
+                    <h2>Activity monitor</h2>
+                    <p class="section-subtitle">Latest user activities recorded by Trust Watch</p>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Log ID</th>
+                            <th>User</th>
+                            <th>Activity</th>
+                            <th>Resource</th>
+                            <th>Action</th>
+                            <th>IP address</th>
+                            <th>Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody id="activitiesTable">
+                        <tr><td colspan="7" class="empty">Loading activity logs...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             INCIDENT MANAGEMENT
+             ================================================= -->
+
+        <section class="section" id="incidents">
+
+            <div class="section-header">
+                <div>
+                    <h2>Incident management</h2>
+                    <p class="section-subtitle">Investigate and resolve detected security incidents</p>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Incident ID</th>
+                            <th>Alert ID</th>
+                            <th>User</th>
+                            <th>Severity</th>
+                            <th>Status</th>
+                            <th>Action taken</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="incidentsTable">
+                        <tr><td colspan="7" class="empty">Loading incidents...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SECURITY ANALYTICS
+             ================================================= -->
+
+        <section class="section" id="analytics">
+
+            <div class="section-header">
+                <div>
+                    <h2>Security analytics</h2>
+                    <p class="section-subtitle">System-wide security statistics</p>
+                </div>
+            </div>
+
+            <div class="analytics-grid">
+
+                <div class="analytics-card">
+                    <span>Total users</span>
+                    <strong id="analyticsTotalUsers">0</strong>
+                </div>
+
+                <div class="analytics-card">
+                    <span>Active users</span>
+                    <strong id="analyticsActiveUsers">0</strong>
+                </div>
+
+                <div class="analytics-card">
+                    <span>Restricted users</span>
+                    <strong id="analyticsRestrictedUsers">0</strong>
+                </div>
+
+                <div class="analytics-card">
+                    <span>Suspended users</span>
+                    <strong id="analyticsSuspendedUsers">0</strong>
+                </div>
+
+                <div class="analytics-card">
+                    <span>Total activities</span>
+                    <strong id="analyticsActivities">0</strong>
+                </div>
+
+                <div class="analytics-card">
+                    <span>Total alerts</span>
+                    <strong id="analyticsAlerts">0</strong>
+                </div>
+
+                <div class="analytics-card">
+                    <span>High alerts</span>
+                    <strong id="analyticsHigh">0</strong>
+                </div>
+
+                <div class="analytics-card">
+                    <span>Critical alerts</span>
+                    <strong id="analyticsCritical">0</strong>
+                </div>
+
+                <div class="analytics-card">
+                    <span>Open incidents</span>
+                    <strong id="analyticsOpenIncidents">0</strong>
+                </div>
+
+                <div class="analytics-card">
+                    <span>Investigating</span>
+                    <strong id="analyticsInvestigating">0</strong>
+                </div>
+
+                <div class="analytics-card">
+                    <span>Resolved incidents</span>
+                    <strong id="analyticsResolved">0</strong>
+                </div>
+
+                <div class="analytics-card">
+                    <span>Medium alerts</span>
+                    <strong id="analyticsMedium">0</strong>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             REPORTS
+             ================================================= -->
+
+        <section class="section" id="reports">
+
+            <div class="section-header">
+                <div>
+                    <h2>Security reports</h2>
+                    <p class="section-subtitle">Generate and download system security reports</p>
+                </div>
+
+                <button class="refresh-btn" id="generateReportBtn">+ Generate report</button>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Report ID</th>
+                            <th>Report type</th>
+                            <th>Generated by</th>
+                            <th>Generated on</th>
+                            <th>Description</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reportsTable">
+                        <tr><td colspan="6" class="empty">Loading reports...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             FOOTER
+             ================================================= -->
+
+        <footer class="footer">
+            <div>
+                <strong>Trust Watch</strong>
+                <span>Internal Threat Detection &amp; Prevention System</span>
+            </div>
+            <div id="lastUpdated">
+                ML engine: active &nbsp;|&nbsp; Monitoring: active
+            </div>
+        </footer>
+
+    </main>
+
+</div>
+
+
+<!-- =========================================================
+     ALERT DETAILS MODAL
+     ========================================================= -->
+
+<div class="modal-overlay" id="alertModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="alertModalTitle">
+        <div class="modal-header">
+            <h2 id="alertModalTitle">Security alert details</h2>
+            <button class="modal-close" id="modalClose" aria-label="Close">×</button>
+        </div>
+        <div class="modal-body" id="alertModalBody">
+            <!-- JavaScript inserts alert information here -->
+        </div>
+    </div>
+</div>
+
+
+<script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+
+</body>
+
+</html>

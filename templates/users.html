@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Trust Watch - Users</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="dashboard-container">
+
+    <header class="topbar">
+
+        <div>
+            <h1>Trust Watch</h1>
+            <p>User Management</p>
+        </div>
+
+        <div>
+            <strong>{{ name }}</strong>
+            |
+            <a href="/logout">Logout</a>
+        </div>
+
+    </header>
+
+
+    <main class="content">
+
+        <div class="page-header">
+
+            <h2>System Users</h2>
+
+            <p>
+                Monitor users and manage their security status.
+            </p>
+
+        </div>
+
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                        <th>Created</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="usersTable">
+
+                    <tr>
+                        <td colspan="7">
+                            Loading users...
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<script>
+
+async function loadUsers() {
+
+    try {
+
+        const response = await fetch("/api/users");
+
+        const users = await response.json();
+
+        const table = document.getElementById("usersTable");
+
+        table.innerHTML = "";
+
+
+        users.forEach(user => {
+
+            let statusClass = "";
+
+            if (user.status === "Active") {
+                statusClass = "severity-low";
+            }
+
+            else if (user.status === "Restricted") {
+                statusClass = "severity-medium";
+            }
+
+            else if (user.status === "Suspended") {
+                statusClass = "severity-critical";
+            }
+
+
+            let actions = "";
+
+            if (user.role === "User") {
+
+                actions = `
+                    <button onclick="changeStatus(${user.user_id}, 'Active')">
+                        Activate
+                    </button>
+
+                    <button onclick="changeStatus(${user.user_id}, 'Restricted')">
+                        Restrict
+                    </button>
+
+                    <button onclick="changeStatus(${user.user_id}, 'Suspended')">
+                        Suspend
+                    </button>
+                `;
+
+            } else {
+
+                actions = "<span>Admin</span>";
+
+            }
+
+
+            table.innerHTML += `
+
+                <tr>
+
+                    <td>${user.user_id}</td>
+
+                    <td>${user.name}</td>
+
+                    <td>${user.email}</td>
+
+                    <td>${user.role}</td>
+
+                    <td>
+                        <span class="severity ${statusClass}">
+                            ${user.status}
+                        </span>
+                    </td>
+
+                    <td class="action-buttons">
+                        ${actions}
+                    </td>
+
+                    <td>
+                        ${user.created_at || "-"}
+                    </td>
+
+                </tr>
+
+            `;
+
+        });
+
+    }
+
+    catch (error) {
+
+        console.error("Error loading users:", error);
+
+    }
+
+}
+
+
+async function changeStatus(userId, status) {
+
+    let confirmation = confirm(
+        "Are you sure you want to change this user's status to "
+        + status
+        + "?"
+    );
+
+
+    if (!confirmation) {
+        return;
+    }
+
+
+    try {
+
+        const response = await fetch(
+            `/api/users/${userId}/status`,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    status: status
+                })
+            }
+        );
+
+
+        const result = await response.json();
+
+
+        if (!response.ok) {
+
+            alert(result.error || "Operation failed.");
+
+            return;
+
+        }
+
+
+        alert(result.message);
+
+        loadUsers();
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        alert("Unable to update user status.");
+
+    }
+
+}
+
+
+loadUsers();
+
+setInterval(loadUsers, 5000);
+
+</script>
+
+</body>
+</html>

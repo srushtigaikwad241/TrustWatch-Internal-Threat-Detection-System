@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Trust Watch - Security Login</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body class="login-page">
+
+    <div class="login-wrapper">
+
+        <div class="login-card">
+
+            <!-- BRAND -->
+
+            <div class="login-brand">
+
+                <div class="brand-icon">
+                    🛡
+                </div>
+
+                <div class="brand-text">
+                    <h1>Trust<span>Watch</span></h1>
+                    <div class="security-label">
+                        SECURITY SYSTEM
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- DESCRIPTION -->
+
+            <div class="login-heading">
+
+                <h2>Welcome Back</h2>
+
+                <p>
+                    Sign in to access the Trust Watch security system
+                </p>
+
+            </div>
+
+
+            <!-- LOGIN FORM -->
+
+            <form method="POST"
+                  autocomplete="off"
+                  class="login-form">
+
+                <!-- EMAIL -->
+
+                <div class="input-group">
+
+                    <label for="email">
+                        Email Address
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Enter your email"
+                        autocomplete="off"
+                        value=""
+                        required
+                    >
+
+                </div>
+
+
+                <!-- PASSWORD -->
+
+                <div class="input-group">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        autocomplete="new-password"
+                        value=""
+                        required
+                    >
+
+                </div>
+
+
+                <!-- LOGIN BUTTON -->
+
+                <button type="submit"
+                        class="login-button">
+
+                    <span>Login to Trust Watch</span>
+
+                    <span class="arrow">→</span>
+
+                </button>
+
+            </form>
+
+
+            <!-- ERROR -->
+
+            {% if error %}
+
+            <div class="login-error">
+                {{ error }}
+            </div>
+
+            {% endif %}
+
+
+            <!-- SECURITY MESSAGE -->
+
+            <div class="security-message">
+
+                <span>🔒</span>
+
+                <p>
+                    Secure authentication enabled
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- FOOTER -->
+
+        <div class="login-footer">
+
+            <span>Trust Watch</span>
+
+            <span>Internal Threat Detection & Prevention System</span>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        window.addEventListener("load", function () {
+
+            document.getElementById("email").value = "";
+            document.getElementById("password").value = "";
+
+        });
+
+    </script>
+
+</body>
+
+</html>
